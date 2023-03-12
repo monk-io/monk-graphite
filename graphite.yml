@@ -1,0 +1,43 @@
+namespace: graphite
+
+db:
+  metadata:
+    defines: metadata
+    name: Graphite
+    description: Graphite is an enterprise-ready monitoring tool that runs equally well on cheap hardware or Cloud infrastructure.
+    website: https://graphiteapp.org/
+    publisher: monk.io
+    icon: https://graphiteapp.org/img/graphite-logo_color@2x.png
+  defines: runnable
+  variables:
+    plaintext_port:
+      type: string
+      value: 2003
+    management_port:
+      type: string
+      value: 8126
+    gui_port:
+      type: string
+      value: 80
+    image:
+      type: string
+      value: 1.1.10-4
+    volume_local:
+      type: string
+      value: <- `${monk-volume-path}/graphite`
+  containers:
+    db:
+      image: graphiteapp/graphite-statsd
+      image-tag: <- `${image}`
+      ports:
+        - <- `${management_port}:8126`
+        - <- `${plaintext_port}:2003`
+        - <- `${gui_port}:80`
+      paths:
+        - <- `${volume_local}/data:/opt/graphite/storage`
+  services:
+    db:
+      port: 2003
+      container: db
+      protocol: tcp
+      host-port: <- `${plaintext_port}`
