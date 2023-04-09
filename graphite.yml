@@ -1,6 +1,8 @@
 ---
 namespace: graphite
-db:
+
+base:
+
   metadata:
     defines: metadata
     name: Graphite
@@ -15,6 +17,12 @@ db:
     website: https://graphiteapp.org/
     publisher: monk.io
     icon: https://graphiteapp.org/img/graphite-logo_color@2x.png
+  containers:
+    db:
+      image: graphiteapp/graphite-statsd
+      image-tag: <- `${image}`
+
+db:
   defines: runnable
   variables:
     plaintext_port:
@@ -29,12 +37,6 @@ db:
     image:
       type: string
       value: 1.1.10-4
-  containers:
-    db:
-      image: graphiteapp/graphite-statsd
-      image-tag: <- `${image}`
-      paths:
-        - <- `${monk-volume-path}/graphite:/opt/graphite/storage`
   services:
     management-svc:
       port: 8126
