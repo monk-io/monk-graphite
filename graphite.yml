@@ -5,7 +5,7 @@ db:
     defines: metadata
     name: Graphite
     description: |
-      raphite is an open-source monitoring and graphing tool that is designed to track and visualize time-series data. It is commonly used for monitoring and analyzing the performance of computer systems, applications, and networks.
+      Graphite is an open-source monitoring and graphing tool that is designed to track and visualize time-series data. It is commonly used for monitoring and analyzing the performance of computer systems, applications, and networks.
 
       Graphite consists of three main components: the Carbon daemon, the Whisper database, and the Graphite web application. The Carbon daemon collects time-series data and sends it to the Whisper database, which stores the data in a highly efficient binary format. The Graphite web application provides a user interface for querying the data and generating graphs and dashboards.
 
