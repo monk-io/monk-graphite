@@ -2,7 +2,6 @@
 namespace: graphite
 
 base:
-
   metadata:
     defines: metadata
     name: Graphite
@@ -24,6 +23,7 @@ base:
 
 db:
   defines: runnable
+  inherits: graphite/base
   variables:
     plaintext_port:
       type: string
