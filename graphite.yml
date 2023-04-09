@@ -1,10 +1,17 @@
+---
 namespace: graphite
-
 db:
   metadata:
     defines: metadata
     name: Graphite
-    description: Graphite is an enterprise-ready monitoring tool that runs equally well on cheap hardware or Cloud infrastructure.
+    description: |
+      raphite is an open-source monitoring and graphing tool that is designed to track and visualize time-series data. It is commonly used for monitoring and analyzing the performance of computer systems, applications, and networks.
+
+      Graphite consists of three main components: the Carbon daemon, the Whisper database, and the Graphite web application. The Carbon daemon collects time-series data and sends it to the Whisper database, which stores the data in a highly efficient binary format. The Graphite web application provides a user interface for querying the data and generating graphs and dashboards.
+
+      Graphite supports a wide range of data sources, including system and application metrics, network traffic, and custom data sources. It also includes a number of APIs and libraries for popular programming languages such as Python and Ruby, allowing users to integrate it with their own applications and tools.
+
+      Graphite provides a flexible and powerful query language called the Graphite Query Language (GQL) that allows users to filter, aggregate, and transform time-series data. It also includes a number of visualization options, including line graphs, stacked area graphs, and bar graphs.
     website: https://graphiteapp.org/
     publisher: monk.io
     icon: https://graphiteapp.org/img/graphite-logo_color@2x.png
@@ -22,22 +29,25 @@ db:
     image:
       type: string
       value: 1.1.10-4
-    volume_local:
-      type: string
-      value: <- `${monk-volume-path}/graphite`
   containers:
     db:
       image: graphiteapp/graphite-statsd
       image-tag: <- `${image}`
-      ports:
-        - <- `${management_port}:8126`
-        - <- `${plaintext_port}:2003`
-        - <- `${gui_port}:80`
       paths:
-        - <- `${volume_local}/data:/opt/graphite/storage`
+        - <- `${monk-volume-path}/graphite:/opt/graphite/storage`
   services:
-    db:
+    management-svc:
+      port: 8126
+      container: db
+      protocol: tcp
+      host-port: <- `${management_port}`
+    plaintext-svc:
       port: 2003
       container: db
       protocol: tcp
       host-port: <- `${plaintext_port}`
+    gui-svc:
+      port: 80
+      container: db
+      protocol: tcp
+      host-port: <- `${gui_port}`

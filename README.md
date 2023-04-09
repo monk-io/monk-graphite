@@ -54,7 +54,6 @@ foo@bar:~$ monk run graphite/db
 | management_port | Graphite management text port                | 8126                          |
 | gui_port        | Graphite management interface port text port | 80                            |
 | image           | Docker image tag                             | 1.1.10-4                      |
-| volume_local    | Volume path                                  | ${monk-volume-path}/timescale |
 
 ## Stop, remove and clean up workloads and templates
 
