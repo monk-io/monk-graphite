@@ -25,12 +25,6 @@ db:
   defines: runnable
   inherits: graphite/base
   variables:
-    plaintext_port:
-      type: string
-      value: 2003
-    management_port:
-      type: string
-      value: 8126
     gui_port:
       type: string
       value: 80
@@ -42,12 +36,10 @@ db:
       port: 8126
       container: db
       protocol: tcp
-      host-port: <- `${management_port}`
     plaintext-svc:
       port: 2003
       container: db
       protocol: tcp
-      host-port: <- `${plaintext_port}`
     gui-svc:
       port: 80
       container: db
