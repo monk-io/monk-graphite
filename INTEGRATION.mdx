@@ -1,0 +1,141 @@
+---
+title: Graphite
+description: Ready-to-run Graphite container template you can run directly or inherit to integrate a time-series monitoring and graphing system into your infrastructure.
+primary_category: observability
+tags: [graphite, monitoring, metrics, template, runnable, time-series, visualization]
+integration_type: template
+hosting_models: [self-hosted]
+website_url: https://graphiteapp.org/
+docs_url: https://graphite.readthedocs.io/
+publisher: monk.io
+---
+
+## Overview
+
+This template provides a production‑ready Graphite instance as a Monk runnable. You can:
+
+- Run it directly to get a managed Graphite container with sensible defaults
+- Inherit it in your own runnable to seamlessly add time-series metrics storage and visualization to your stack
+
+It exposes Graphite's web UI on port 80, the Carbon plaintext protocol on port 2003 for metrics ingestion, and StatsD management interface on port 8126. The template uses an all-in-one container that includes Carbon (metric collection), Whisper (storage), and Graphite-Web (visualization).
+
+## What this template manages
+
+- Graphite container (`graphiteapp/graphite-statsd` image, configurable tag)
+- Network services:
+  - Web UI on port 80
+  - Carbon plaintext protocol on port 2003
+  - StatsD management on port 8126
+- Time-series data storage and visualization
+
+## Quick start (run directly)
+
+1) Load templates
+
+```bash
+monk load MANIFEST
+```
+
+2) Run Graphite with defaults
+
+```bash
+monk run graphite/db
+```
+
+3) Customize port (optional)
+
+Running directly uses the defaults defined in this template's `variables`.
+
+- Preferred: inherit and customize variables as shown below.
+- Alternative: fork/clone and edit the `variables` in `graphite.yml`, then `monk load MANIFEST` and run.
+
+Once started, access the web UI at `http://localhost:80` (or the configured `gui_port`) and send metrics to port 2003.
+
+## Configuration
+
+Key variables you can customize in this template:
+
+```yaml
+variables:
+  image: "1.1.10-4"       # container image tag
+  gui_port: 80            # web UI host port
+```
+
+## Use by inheritance (recommended for apps)
+
+Inherit the Graphite runnable in your application to add metrics collection. Example:
+
+```yaml
+namespace: myapp
+metrics:
+  defines: runnable
+  inherits: graphite/db
+  variables:
+    gui_port:
+      value: 8080
+api:
+  defines: runnable
+  containers:
+    api:
+      image: myorg/api
+      environment:
+        - GRAPHITE_HOST=<- connection-hostname("metrics-connection")
+        - GRAPHITE_PORT=2003
+  connections:
+    metrics-connection:
+      runnable: metrics
+      service: plaintext-svc
+```
+
+Then run your app group:
+
+```bash
+monk run myapp/api
+```
+
+## Ports and connectivity
+
+- Service: `gui-svc` on TCP port `80` (web UI, configurable via `gui_port`)
+- Service: `plaintext-svc` on TCP port `2003` (Carbon plaintext protocol for metrics ingestion)
+- Service: `management-svc` on TCP port `8126` (StatsD management interface)
+- From other runnables in the same process group, use `connection-hostname("<connection-name>")` to resolve the Graphite host.
+
+## Sending metrics to Graphite
+
+You can send metrics using the plaintext protocol on port 2003:
+
+```bash
+echo "test.metric 42 $(date +%s)" | nc localhost 2003
+```
+
+Or use one of the many Graphite client libraries available for various languages.
+
+## Features
+
+- Time-series data storage with Whisper database
+- Real-time graphing and visualization
+- Multiple data retention policies
+- Carbon plaintext and pickle protocols
+- Built-in StatsD daemon
+- HTTP API for data queries
+- Dashboard creation and sharing
+- Graphite Query Language (GQL) for data manipulation
+
+## Related templates
+
+- Combine with `grafana/` for advanced visualization and dashboards
+- Integrate with `telegraf/` for comprehensive metrics collection
+- Use with `prometheus/` for additional monitoring capabilities
+
+## Troubleshooting
+
+- If the web UI is not accessible, verify that the `gui_port` is not already in use and check firewall rules.
+- Ensure metrics are being sent to the correct port (2003 for plaintext protocol).
+- Check logs:
+
+```bash
+monk logs -l 500 -f graphite/db
+```
+
+- To verify metrics are being received, check the web UI's "Composer" view or query the API directly.
+
