@@ -30,7 +30,7 @@ db:
       value: 80
     image:
       type: string
-      value: 1.1.10-4
+      value: latest
   services:
     management-svc:
       port: 8126
